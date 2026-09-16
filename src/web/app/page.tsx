@@ -1,82 +1,175 @@
-import { getTasks, createTask, toggleTask } from './actions';
+'use client';
 
-export default async function Home() {
-  const tasks = await getTasks();
+import { useState } from 'react';
+
+export default function Calculator() {
+  const [display, setDisplay] = useState('0');
+  const [previousValue, setPreviousValue] = useState<number | null>(null);
+  const [operation, setOperation] = useState<string | null>(null);
+  const [waitingForNewValue, setWaitingForNewValue] = useState(false);
+
+  const handleNumber = (num: string) => {
+    if (waitingForNewValue) {
+      setDisplay(num);
+      setWaitingForNewValue(false);
+    } else {
+      setDisplay(display === '0' ? num : display + num);
+    }
+  };
+
+  const handleDecimal = () => {
+    if (waitingForNewValue) {
+      setDisplay('0.');
+      setWaitingForNewValue(false);
+    } else if (!display.includes('.')) {
+      setDisplay(display + '.');
+    }
+  };
+
+  const handleOperation = (op: string) => {
+    const currentValue = parseFloat(display);
+
+    if (previousValue === null) {
+      setPreviousValue(currentValue);
+    } else if (operation) {
+      const result = calculate(previousValue, currentValue, operation);
+      setDisplay(String(result));
+      setPreviousValue(result);
+    }
+
+    setOperation(op);
+    setWaitingForNewValue(true);
+  };
+
+  const calculate = (prev: number, current: number, op: string): number => {
+    switch (op) {
+      case '+':
+        return prev + current;
+      case '-':
+        return prev - current;
+      case '*':
+        return prev * current;
+      case '/':
+        return prev / current;
+      default:
+        return current;
+    }
+  };
+
+  const handleEquals = () => {
+    const currentValue = parseFloat(display);
+
+    if (previousValue !== null && operation) {
+      const result = calculate(previousValue, currentValue, operation);
+      setDisplay(String(result));
+      setPreviousValue(null);
+      setOperation(null);
+      setWaitingForNewValue(true);
+    }
+  };
+
+  const handleClear = () => {
+    setDisplay('0');
+    setPreviousValue(null);
+    setOperation(null);
+    setWaitingForNewValue(false);
+  };
+
+  const handleBackspace = () => {
+    if (display.length === 1) {
+      setDisplay('0');
+    } else {
+      setDisplay(display.slice(0, -1));
+    }
+  };
+
+  const Button = ({ children, onClick, className = '', variant = 'default' }: any) => {
+    const baseClass = 'w-full h-16 text-xl font-semibold rounded-lg transition-all active:scale-95';
+    const variants = {
+      default: 'bg-green-500 hover:bg-green-600 text-white shadow-lg hover:shadow-xl',
+      operator: 'bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-xl',
+      equals: 'bg-green-700 hover:bg-green-800 text-white shadow-lg hover:shadow-xl col-span-2',
+      clear: 'bg-red-500 hover:bg-red-600 text-white shadow-lg hover:shadow-xl',
+    };
+
+    return (
+      <button
+        onClick={onClick}
+        className={`${baseClass} ${variants[variant]} ${className}`}
+      >
+        {children}
+      </button>
+    );
+  };
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900 py-16 px-4">
-      <div className="max-w-lg mx-auto">
-        <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50 mb-8">
-          To-Do List
-        </h1>
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900 dark:to-green-950 py-8 px-4 flex items-center justify-center">
+      <div className="w-full max-w-sm">
+        <div className="bg-white dark:bg-green-900 rounded-2xl shadow-2xl p-6 border-2 border-green-200 dark:border-green-700">
+          {/* Header */}
+          <h1 className="text-3xl font-bold text-green-700 dark:text-green-300 mb-6 text-center">
+            🟢 Green Calculator
+          </h1>
 
-        {/* Add task form */}
-        <form action={createTask} className="flex gap-2 mb-8">
-          <input
-            name="title"
-            type="text"
-            required
-            placeholder="Add a new task..."
-            className="flex-1 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 px-4 py-2 text-zinc-900 dark:text-zinc-50 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-500"
-          />
-          <button
-            type="submit"
-            className="rounded-lg bg-zinc-900 dark:bg-zinc-50 px-5 py-2 font-medium text-white dark:text-zinc-900 hover:bg-zinc-700 dark:hover:bg-zinc-200 transition-colors"
-          >
-            Add
-          </button>
-        </form>
+          {/* Display */}
+          <div className="bg-gradient-to-r from-green-100 to-green-50 dark:from-green-800 dark:to-green-700 rounded-xl p-6 mb-6 border-2 border-green-300 dark:border-green-600">
+            <div className="text-right text-5xl font-bold text-green-900 dark:text-green-100 break-words">
+              {display}
+            </div>
+          </div>
 
-        {/* Task list */}
-        <ul className="space-y-2">
-          {tasks.length === 0 && (
-            <li className="text-zinc-400 text-center py-8">No tasks yet. Add one above!</li>
-          )}
-          {tasks.map((task) => (
-            <li
-              key={task.id}
-              className="flex items-center gap-3 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-3"
-            >
-              <form
-                action={async () => {
-                  'use server';
-                  await toggleTask(task.id, !task.completed);
-                }}
-              >
-                <button
-                  type="submit"
-                  className={`h-5 w-5 rounded border-2 flex-shrink-0 transition-colors ${
-                    task.completed
-                      ? 'bg-zinc-900 dark:bg-zinc-50 border-zinc-900 dark:border-zinc-50'
-                      : 'border-zinc-300 dark:border-zinc-600 hover:border-zinc-500'
-                  }`}
-                  aria-label={task.completed ? 'Mark incomplete' : 'Mark complete'}
-                >
-                  {task.completed && (
-                    <svg viewBox="0 0 12 12" className="text-white dark:text-zinc-900 w-full h-full p-0.5">
-                      <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  )}
-                </button>
-              </form>
-              <span
-                className={`flex-1 text-sm ${
-                  task.completed
-                    ? 'line-through text-zinc-400'
-                    : 'text-zinc-800 dark:text-zinc-100'
-                }`}
-              >
-                {task.title}
-              </span>
-            </li>
-          ))}
-        </ul>
+          {/* Buttons Grid */}
+          <div className="grid grid-cols-4 gap-3">
+            {/* Row 1 */}
+            <Button onClick={handleClear} variant="clear" className="col-span-2">
+              CLEAR
+            </Button>
+            <Button onClick={handleBackspace} variant="clear">
+              ←
+            </Button>
+            <Button onClick={() => handleOperation('/')} variant="operator">
+              ÷
+            </Button>
 
-        {tasks.length > 0 && (
-          <p className="mt-4 text-xs text-zinc-400 text-right">
-            {tasks.filter((t) => t.completed).length} / {tasks.length} completed
-          </p>
-        )}
+            {/* Row 2 */}
+            <Button onClick={() => handleNumber('7')}>7</Button>
+            <Button onClick={() => handleNumber('8')}>8</Button>
+            <Button onClick={() => handleNumber('9')}>9</Button>
+            <Button onClick={() => handleOperation('*')} variant="operator">
+              ×
+            </Button>
+
+            {/* Row 3 */}
+            <Button onClick={() => handleNumber('4')}>4</Button>
+            <Button onClick={() => handleNumber('5')}>5</Button>
+            <Button onClick={() => handleNumber('6')}>6</Button>
+            <Button onClick={() => handleOperation('-')} variant="operator">
+              −
+            </Button>
+
+            {/* Row 4 */}
+            <Button onClick={() => handleNumber('1')}>1</Button>
+            <Button onClick={() => handleNumber('2')}>2</Button>
+            <Button onClick={() => handleNumber('3')}>3</Button>
+            <Button onClick={() => handleOperation('+')} variant="operator">
+              +
+            </Button>
+
+            {/* Row 5 */}
+            <Button onClick={() => handleNumber('0')} className="col-span-2">
+              0
+            </Button>
+            <Button onClick={handleDecimal}>.</Button>
+            <Button onClick={handleEquals} variant="equals">
+              =
+            </Button>
+          </div>
+
+          {/* Footer */}
+          <div className="mt-6 text-center text-sm text-green-600 dark:text-green-400">
+            ✓ Fully functional calculator with green theme
+          </div>
+        </div>
       </div>
     </div>
   );
