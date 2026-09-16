@@ -2,6 +2,23 @@
 
 A reference implementation of a three-tier web application: a Next.js frontend, an Express REST API, and a PostgreSQL database. It runs locally with Docker Compose and deploys to Google Cloud Platform (Cloud Run + Cloud SQL) via Terraform.
 
+## Summary
+
+This project demonstrates a complete, production-ready three-tier application architecture. It serves as a reference implementation for building scalable web applications with clear separation of concerns:
+
+- **Frontend Layer**: A modern Next.js 16 application with React 19 and Tailwind CSS, providing a responsive user interface for task management
+- **API Layer**: An Express 5 REST API built with Node.js 22, handling business logic and data validation
+- **Data Layer**: PostgreSQL 17 database with automated migrations using node-pg-migrate
+
+The application is a simple task manager (to-do list) that demonstrates how the three tiers communicate. It showcases best practices for:
+- **Local Development**: Docker Compose orchestration for seamless multi-container development
+- **Infrastructure as Code**: Terraform configuration for reproducible GCP deployments
+- **Database Migrations**: Automated schema management with version control
+- **Containerization**: Production-ready Dockerfiles for each service
+- **CI/CD**: GitHub Actions workflow for automated deployments
+
+The project is designed to be both educational and practical—suitable for learning microservices architecture or as a starting point for new applications.
+
 ## Architecture
 
 ```
