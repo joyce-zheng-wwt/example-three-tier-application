@@ -1,4 +1,4 @@
-import { getTasks, createTask, toggleTask } from './actions';
+import { getTasks, createTask, toggleTask, deleteTask } from './actions';
 import Link from 'next/link';
 
 export default async function Home() {
@@ -77,6 +77,22 @@ export default async function Home() {
               >
                 {task.title}
               </span>
+              <form
+                action={async () => {
+                  'use server';
+                  await deleteTask(task.id);
+                }}
+              >
+                <button
+                  type="submit"
+                  className="flex-shrink-0 rounded p-1 text-zinc-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                  aria-label={`Delete ${task.title}`}
+                >
+                  <svg viewBox="0 0 16 16" className="h-4 w-4">
+                    <path d="M3 4h10M6.5 4V2.5h3V4M5 4l.5 9h5L11 4" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+              </form>
             </li>
           ))}
         </ul>
