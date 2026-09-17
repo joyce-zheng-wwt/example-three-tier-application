@@ -16,12 +16,11 @@ Browser → Web (Next.js :3000) → API (Express :3001) → PostgreSQL
 | Migrations | node-pg-migrate | `src/db/` |
 | Infrastructure | Terraform (GCP) | `src/infrastructure/` |
 
-The app includes a task manager (to-do list) that demonstrates how the three tiers communicate, plus a Snake game for entertainment.
+The app includes a task manager (to-do list) that demonstrates how the three tiers communicate.
 
 ## Features
 
 - **To-Do List** (`/`) — Full-stack task manager with create, update, and delete operations
-- **Snake Game** (`/snake`) — Classic Snake game built with React and HTML5 Canvas
 - **Counter** (`/counter`) — Simple client-side counter demo
 
 ## Running locally with Docker Compose
@@ -87,7 +86,6 @@ src/
 ├── web/            # Next.js frontend
 │   ├── app/        # App Router pages and components
 │   │   ├── page.tsx        # To-Do List (home page)
-│   │   ├── snake/page.tsx  # Snake Game
 │   │   └── counter/page.tsx # Counter demo
 │   └── Dockerfile
 └── infrastructure/ # Terraform for GCP deployment
@@ -141,4 +139,4 @@ DATABASE_URL=postgres://app:app@localhost:5432/app npx node-pg-migrate down
 
 When running via Docker Compose the `migrate` service handles this automatically on startup.
 
-🚀 🐳 🗄️ ⚡ 🎯 🌟 ✨ 🔧 💻 🎨 🐍 🎮
+🚀 🐳 🗄️ ⚡ 🎯 🌟 ✨ 🔧 💻 🎨
