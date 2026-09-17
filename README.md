@@ -17,7 +17,7 @@ Browser → Web (Next.js :3000) → API (Express :3001) → PostgreSQL
 
 | Layer | Technology | Location |
 |-------|-----------|----------|
-| Frontend | Next.js 16, React 19, Tailwind CSS | `src/web/` |
+| Frontend | Next.js 16, React 19 | `src/web/` |
 | API | Express 5, Node.js 22 | `src/api/` |
 | Database | PostgreSQL 17 | managed by Docker / Cloud SQL |
 | Migrations | node-pg-migrate | `src/db/` |
