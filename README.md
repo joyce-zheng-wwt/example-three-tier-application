@@ -8,6 +8,13 @@ A reference implementation of a three-tier web application: a Next.js frontend, 
 Browser → Web (Next.js :3000) → API (Express :3001) → PostgreSQL
 ```
 
+```
+   +-----------+       +---------------+       +---------------+       +--------------+
+   |  Browser  | ----> |  Web (:3000)  | ----> |  API (:3001)  | ----> |  PostgreSQL  |
+   |  (Client) | <---- |    Next.js    | <---- |    Express    | <---- |   Database   |
+   +-----------+       +---------------+       +---------------+       +--------------+
+```
+
 | Layer | Technology | Location |
 |-------|-----------|----------|
 | Frontend | Next.js 16, React 19, Tailwind CSS | `src/web/` |
@@ -104,6 +111,15 @@ The `src/infrastructure/` directory contains Terraform that provisions:
 - Secret Manager secret for the database URL
 - Service accounts and IAM bindings
 
+```
+                 +---------------------------VPC network----------------------------+
+                 |                                                                  |
+   +---------+   +---------+      +-----------+      +-----------+   +--------------+
+   |  Users  |-->|  Cloud  |----->| Cloud Run |----->| Cloud Run |-->|  Cloud SQL   |
+   |         |   | Run:web |      |   (web)   |      |   (api)   |   | (PostgreSQL) |
+   +---------+   +---------+      +-----------+      +-----------+   +--------------+
+```
+
 ### Required variables
 
 | Variable | Description |
@@ -139,4 +155,4 @@ DATABASE_URL=postgres://app:app@localhost:5432/app npx node-pg-migrate down
 
 When running via Docker Compose the `migrate` service handles this automatically on startup.
 
-🚀 🐳 🗄️ ⚡ 🎯 🌟 ✨ 🔧 💻 🎨 🛠️ 📦 🔥 🧪 🌐
+🚀 🐳 🗄️ ⚡ 🎯 🌟 ✨ 🔧 💻 🎨 🛠️ 📦 🔥 🧪 🌐 🎉 🏗️
