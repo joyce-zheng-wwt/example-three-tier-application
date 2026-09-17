@@ -1,82 +1,163 @@
-import { getTasks, createTask, toggleTask } from './actions';
+'use client';
 
-export default async function Home() {
-  const tasks = await getTasks();
+import { useState } from 'react';
+
+export default function Home() {
+  const [count, setCount] = useState(0);
+
+  const increment = () => setCount(count + 1);
+  const decrement = () => setCount(count - 1);
+  const reset = () => setCount(0);
+
+  const styles = {
+    container: {
+      minHeight: '100vh',
+      backgroundColor: '#f4f4f4',
+      padding: '16px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+    },
+    card: {
+      maxWidth: '400px',
+      width: '100%',
+      backgroundColor: 'white',
+      borderRadius: '12px',
+      border: '1px solid #e0e0e0',
+      padding: '32px',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    },
+    title: {
+      fontSize: '28px',
+      fontWeight: 'bold',
+      color: '#333',
+      marginBottom: '32px',
+      textAlign: 'center' as const,
+    },
+    displayBox: {
+      backgroundColor: '#f9f9f9',
+      borderRadius: '8px',
+      padding: '32px',
+      marginBottom: '32px',
+      textAlign: 'center' as const,
+    },
+    label: {
+      fontSize: '14px',
+      color: '#666',
+      marginBottom: '8px',
+    },
+    count: {
+      fontSize: '56px',
+      fontWeight: 'bold',
+      color: '#333',
+    },
+    buttonGroup: {
+      display: 'flex',
+      gap: '12px',
+      marginBottom: '16px',
+    },
+    buttonSmall: {
+      flex: 1,
+      padding: '12px 16px',
+      fontSize: '18px',
+      fontWeight: '600',
+      border: 'none',
+      borderRadius: '8px',
+      cursor: 'pointer',
+      transition: 'all 0.2s ease',
+    },
+    decrementBtn: {
+      backgroundColor: '#ef4444',
+      color: 'white',
+    },
+    decrementBtnHover: {
+      backgroundColor: '#dc2626',
+    },
+    incrementBtn: {
+      backgroundColor: '#22c55e',
+      color: 'white',
+    },
+    incrementBtnHover: {
+      backgroundColor: '#16a34a',
+    },
+    resetBtn: {
+      width: '100%',
+      padding: '12px 16px',
+      fontSize: '16px',
+      fontWeight: '600',
+      backgroundColor: '#333',
+      color: 'white',
+      border: 'none',
+      borderRadius: '8px',
+      cursor: 'pointer',
+      transition: 'all 0.2s ease',
+    },
+    resetBtnHover: {
+      backgroundColor: '#555',
+    },
+    info: {
+      marginTop: '24px',
+      textAlign: 'center' as const,
+      fontSize: '14px',
+      color: '#999',
+    },
+  };
+
+  const [decrementHover, setDecrementHover] = useState(false);
+  const [incrementHover, setIncrementHover] = useState(false);
+  const [resetHover, setResetHover] = useState(false);
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900 py-16 px-4">
-      <div className="max-w-lg mx-auto">
-        <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50 mb-8">
-          To-Do List
-        </h1>
+    <div style={styles.container}>
+      <div style={styles.card}>
+        <h1 style={styles.title}>Counter App</h1>
 
-        {/* Add task form */}
-        <form action={createTask} className="flex gap-2 mb-8">
-          <input
-            name="title"
-            type="text"
-            required
-            placeholder="Add a new task..."
-            className="flex-1 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 px-4 py-2 text-zinc-900 dark:text-zinc-50 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-500"
-          />
+        <div style={styles.displayBox}>
+          <p style={styles.label}>Current Count</p>
+          <p style={styles.count}>{count}</p>
+        </div>
+
+        <div style={styles.buttonGroup}>
           <button
-            type="submit"
-            className="rounded-lg bg-zinc-900 dark:bg-zinc-50 px-5 py-2 font-medium text-white dark:text-zinc-900 hover:bg-zinc-700 dark:hover:bg-zinc-200 transition-colors"
+            onClick={decrement}
+            onMouseEnter={() => setDecrementHover(true)}
+            onMouseLeave={() => setDecrementHover(false)}
+            style={{
+              ...styles.buttonSmall,
+              ...styles.decrementBtn,
+              ...(decrementHover ? styles.decrementBtnHover : {}),
+            }}
           >
-            Add
+            −
           </button>
-        </form>
+          <button
+            onClick={increment}
+            onMouseEnter={() => setIncrementHover(true)}
+            onMouseLeave={() => setIncrementHover(false)}
+            style={{
+              ...styles.buttonSmall,
+              ...styles.incrementBtn,
+              ...(incrementHover ? styles.incrementBtnHover : {}),
+            }}
+          >
+            +
+          </button>
+        </div>
 
-        {/* Task list */}
-        <ul className="space-y-2">
-          {tasks.length === 0 && (
-            <li className="text-zinc-400 text-center py-8">No tasks yet. Add one above!</li>
-          )}
-          {tasks.map((task) => (
-            <li
-              key={task.id}
-              className="flex items-center gap-3 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-3"
-            >
-              <form
-                action={async () => {
-                  'use server';
-                  await toggleTask(task.id, !task.completed);
-                }}
-              >
-                <button
-                  type="submit"
-                  className={`h-5 w-5 rounded border-2 flex-shrink-0 transition-colors ${
-                    task.completed
-                      ? 'bg-zinc-900 dark:bg-zinc-50 border-zinc-900 dark:border-zinc-50'
-                      : 'border-zinc-300 dark:border-zinc-600 hover:border-zinc-500'
-                  }`}
-                  aria-label={task.completed ? 'Mark incomplete' : 'Mark complete'}
-                >
-                  {task.completed && (
-                    <svg viewBox="0 0 12 12" className="text-white dark:text-zinc-900 w-full h-full p-0.5">
-                      <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  )}
-                </button>
-              </form>
-              <span
-                className={`flex-1 text-sm ${
-                  task.completed
-                    ? 'line-through text-zinc-400'
-                    : 'text-zinc-800 dark:text-zinc-100'
-                }`}
-              >
-                {task.title}
-              </span>
-            </li>
-          ))}
-        </ul>
+        <button
+          onClick={reset}
+          onMouseEnter={() => setResetHover(true)}
+          onMouseLeave={() => setResetHover(false)}
+          style={{
+            ...styles.resetBtn,
+            ...(resetHover ? styles.resetBtnHover : {}),
+          }}
+        >
+          Reset
+        </button>
 
-        {tasks.length > 0 && (
-          <p className="mt-4 text-xs text-zinc-400 text-right">
-            {tasks.filter((t) => t.completed).length} / {tasks.length} completed
-          </p>
-        )}
+        <p style={styles.info}>Click the buttons to change the counter</p>
       </div>
     </div>
   );
