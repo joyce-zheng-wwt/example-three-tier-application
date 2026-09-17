@@ -11,6 +11,15 @@ export type Task = {
   created_at: string;
 };
 
+export type Alarm = {
+  id: number;
+  title: string;
+  time: string;
+  enabled: boolean;
+  days: string;
+  created_at: string;
+};
+
 export async function getTasks(): Promise<Task[]> {
   const res = await fetch(`${API_URL}/tasks`, { cache: 'no-store' });
   if (!res.ok) throw new Error('Failed to fetch tasks');
@@ -39,4 +48,36 @@ export async function toggleTask(id: number, completed: boolean) {
 export async function deleteTask(id: number) {
   await fetch(`${API_URL}/tasks/${id}`, { method: 'DELETE' });
   revalidatePath('/');
+}
+
+export async function getAlarms(): Promise<Alarm[]> {
+  const res = await fetch(`${API_URL}/alarms`, { cache: 'no-store' });
+  if (!res.ok) throw new Error('Failed to fetch alarms');
+  return res.json();
+}
+
+export async function createAlarm(formData: FormData) {
+  const title = formData.get('title') as string;
+  const time = formData.get('time') as string;
+  const days = formData.get('days') as string;
+  await fetch(`${API_URL}/alarms`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title, time, days }),
+  });
+  revalidatePath('/alarms');
+}
+
+export async function toggleAlarm(id: number, enabled: boolean) {
+  await fetch(`${API_URL}/alarms/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ enabled }),
+  });
+  revalidatePath('/alarms');
+}
+
+export async function deleteAlarm(id: number) {
+  await fetch(`${API_URL}/alarms/${id}`, { method: 'DELETE' });
+  revalidatePath('/alarms');
 }
