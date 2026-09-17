@@ -11,12 +11,20 @@ export default async function AlarmsPage() {
           <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50">
             Alarms
           </h1>
-          <Link
-            href="/"
-            className="text-sm text-zinc-500 dark:text-zinc-400 hover:underline"
-          >
-            To-Do List →
-          </Link>
+          <div className="flex gap-3">
+            <Link
+              href="/"
+              className="text-sm text-zinc-500 dark:text-zinc-400 hover:underline"
+            >
+              To-Do List →
+            </Link>
+            <Link
+              href="/counter"
+              className="text-sm text-zinc-500 dark:text-zinc-400 hover:underline"
+            >
+              Counter →
+            </Link>
+          </div>
         </div>
 
         {/* Add alarm form */}
