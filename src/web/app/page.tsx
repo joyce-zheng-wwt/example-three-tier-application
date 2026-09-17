@@ -11,12 +11,20 @@ export default async function Home() {
           <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50">
             To-Do List
           </h1>
-          <Link
-            href="/counter"
-            className="text-sm text-zinc-500 dark:text-zinc-400 hover:underline"
-          >
-            Counter →
-          </Link>
+          <div className="flex gap-4">
+            <Link
+              href="/counter"
+              className="text-sm text-zinc-500 dark:text-zinc-400 hover:underline"
+            >
+              Counter →
+            </Link>
+            <Link
+              href="/snake"
+              className="text-sm text-zinc-500 dark:text-zinc-400 hover:underline"
+            >
+              Snake →
+            </Link>
+          </div>
         </div>
 
         {/* Add task form */}
