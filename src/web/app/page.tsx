@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { getTasks, createTask, toggleTask } from './actions';
 
 export default async function Home() {
@@ -6,9 +7,15 @@ export default async function Home() {
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900 py-16 px-4">
       <div className="max-w-lg mx-auto">
-        <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50 mb-8">
+        <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50 mb-2">
           To-Do List
         </h1>
+        <Link
+          href="/counters"
+          className="inline-block mb-8 text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
+        >
+          Counters →
+        </Link>
 
         {/* Add task form */}
         <form action={createTask} className="flex gap-2 mb-8">

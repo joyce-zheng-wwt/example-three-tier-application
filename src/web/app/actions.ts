@@ -11,6 +11,13 @@ export type Task = {
   created_at: string;
 };
 
+export type Counter = {
+  id: number;
+  name: string;
+  value: number;
+  created_at: string;
+};
+
 export async function getTasks(): Promise<Task[]> {
   const res = await fetch(`${API_URL}/tasks`, { cache: 'no-store' });
   if (!res.ok) throw new Error('Failed to fetch tasks');
@@ -34,4 +41,43 @@ export async function toggleTask(id: number, completed: boolean) {
     body: JSON.stringify({ completed }),
   });
   revalidatePath('/');
+}
+
+export async function getCounters(): Promise<Counter[]> {
+  const res = await fetch(`${API_URL}/counters`, { cache: 'no-store' });
+  if (!res.ok) throw new Error('Failed to fetch counters');
+  return res.json();
+}
+
+export async function createCounter(formData: FormData) {
+  const name = formData.get('name') as string;
+  await fetch(`${API_URL}/counters`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name }),
+  });
+  revalidatePath('/counters');
+}
+
+export async function stepCounter(id: number, delta: number) {
+  await fetch(`${API_URL}/counters/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ delta }),
+  });
+  revalidatePath('/counters');
+}
+
+export async function resetCounter(id: number) {
+  await fetch(`${API_URL}/counters/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ value: 0 }),
+  });
+  revalidatePath('/counters');
+}
+
+export async function deleteCounter(id: number) {
+  await fetch(`${API_URL}/counters/${id}`, { method: 'DELETE' });
+  revalidatePath('/counters');
 }
