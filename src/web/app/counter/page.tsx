@@ -43,12 +43,20 @@ export default function CounterPage() {
           </button>
         </div>
 
-        <Link
-          href="/"
-          className="mt-10 text-sm text-zinc-500 dark:text-zinc-400 hover:underline"
-        >
-          ← Back to To-Do List
-        </Link>
+        <div className="mt-10 flex gap-4">
+          <Link
+            href="/"
+            className="text-sm text-zinc-500 dark:text-zinc-400 hover:underline"
+          >
+            ← Back to To-Do List
+          </Link>
+          <Link
+            href="/alarms"
+            className="text-sm text-zinc-500 dark:text-zinc-400 hover:underline"
+          >
+            Alarms →
+          </Link>
+        </div>
       </div>
     </div>
   );

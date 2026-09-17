@@ -16,7 +16,7 @@ Browser → Web (Next.js :3000) → API (Express :3001) → PostgreSQL
 | Migrations | node-pg-migrate | `src/db/` |
 | Infrastructure | Terraform (GCP) | `src/infrastructure/` |
 
-The app is a simple task manager (to-do list) that demonstrates how the three tiers communicate.
+The app includes a task manager (to-do list) and an alarm app that demonstrate how the three tiers communicate.
 
 ## Running locally with Docker Compose
 
@@ -66,6 +66,10 @@ The API is not exposed directly, but you can reach it through the web container 
 | POST | `/tasks` | Create a task (`{ "title": "..." }`) |
 | PATCH | `/tasks/:id` | Update a task (`{ "completed": true }` or `{ "title": "..." }`) |
 | DELETE | `/tasks/:id` | Delete a task |
+| GET | `/alarms` | List all alarms |
+| POST | `/alarms` | Create an alarm (`{ "title": "...", "time": "HH:MM", "days": "daily\|weekdays\|weekends\|once" }`) |
+| PATCH | `/alarms/:id` | Update an alarm (`{ "enabled": true }`, `{ "title": "..." }`, `{ "time": "HH:MM" }`, or `{ "days": "..." }`) |
+| DELETE | `/alarms/:id` | Delete an alarm |
 
 ## Project structure
 
@@ -80,12 +84,33 @@ src/
 │   └── Dockerfile
 ├── web/            # Next.js frontend
 │   ├── app/        # App Router pages and components
+│   │   ├── page.tsx           # To-Do List page
+│   │   ├── counter/page.tsx   # Counter page (client-side demo)
+│   │   ├── alarms/page.tsx    # Alarms page
+│   │   └── actions.ts         # Server actions for API calls
 │   └── Dockerfile
 └── infrastructure/ # Terraform for GCP deployment
     ├── main.tf
     ├── variables.tf
     └── outputs.tf
 ```
+
+## Features
+
+### To-Do List
+- Create, complete, and delete tasks
+- Tasks are persisted in PostgreSQL
+- Server-side rendering with Next.js App Router
+
+### Alarm App
+- Create alarms with a specific time and repeat pattern
+- Enable/disable alarms without deleting them
+- Repeat options: Daily, Weekdays, Weekends, or Once
+- Alarms are persisted in PostgreSQL
+
+### Counter
+- Client-side state management with React hooks
+- No backend required (demonstrates client-side interactivity)
 
 ## Deploying to GCP
 
