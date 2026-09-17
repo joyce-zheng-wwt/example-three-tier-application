@@ -18,6 +18,13 @@ Browser → Web (Next.js :3000) → API (Express :3001) → PostgreSQL
 
 The app is a simple task manager (to-do list) that demonstrates how the three tiers communicate.
 
+### Pages
+
+| Path | Description |
+|------|-------------|
+| `/` | To-do list — server-rendered, reads and writes through the API and database |
+| `/counter` | A very simple counter — increment, decrement and reset, held in client-side React state only (no API or database) |
+
 ## Running locally with Docker Compose
 
 ### Prerequisites
@@ -80,6 +87,8 @@ src/
 │   └── Dockerfile
 ├── web/            # Next.js frontend
 │   ├── app/        # App Router pages and components
+│   │   ├── page.tsx         # To-do list
+│   │   └── counter/page.tsx # Counter
 │   └── Dockerfile
 └── infrastructure/ # Terraform for GCP deployment
     ├── main.tf
