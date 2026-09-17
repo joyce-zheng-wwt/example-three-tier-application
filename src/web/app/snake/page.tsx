@@ -83,7 +83,15 @@ export default function SnakePage() {
           newHead.y < 0 ||
           newHead.x >= GRID_SIZE ||
           newHead.y >= GRID_SIZE;
-        const hitSelf = prevSnake.some(
+
+        const ateFood = newHead.x === food.x && newHead.y === food.y;
+
+        // When the snake doesn't grow this tick, its tail cell moves away
+        // in the same step, so moving into that cell is not a collision.
+        // Only check against the body that will still be occupied after
+        // this move.
+        const bodyToCheck = ateFood ? prevSnake : prevSnake.slice(0, -1);
+        const hitSelf = bodyToCheck.some(
           (segment) => segment.x === newHead.x && segment.y === newHead.y,
         );
 
@@ -92,7 +100,6 @@ export default function SnakePage() {
           return prevSnake;
         }
 
-        const ateFood = newHead.x === food.x && newHead.y === food.y;
         const newSnake = [newHead, ...prevSnake];
 
         if (ateFood) {
