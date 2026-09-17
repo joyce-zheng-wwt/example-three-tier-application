@@ -17,18 +17,11 @@ Browser → Web (Next.js :3000) → API (Express :3001) → PostgreSQL
 
 | Layer | Technology | Location |
 |-------|-----------|----------|
-| Frontend | Next.js 16, React 19, Tailwind CSS | `src/web/` |
+| Frontend | Next.js 16, React 19 | `src/web/` |
 | API | Express 5, Node.js 22 | `src/api/` |
 | Database | PostgreSQL 17 | managed by Docker / Cloud SQL |
 | Migrations | node-pg-migrate | `src/db/` |
 | Infrastructure | Terraform (GCP) | `src/infrastructure/` |
-
-The app includes a task manager (to-do list) that demonstrates how the three tiers communicate.
-
-## Features
-
-- **To-Do List** (`/`) — Full-stack task manager with create, update, and delete operations
-- **Counter** (`/counter`) — Simple client-side counter demo
 
 ## Running locally with Docker Compose
 
@@ -74,10 +67,6 @@ The API is not exposed directly, but you can reach it through the web container 
 | Method | Path | Description |
 |--------|------|-------------|
 | GET | `/health` | Health check |
-| GET | `/tasks` | List all tasks |
-| POST | `/tasks` | Create a task (`{ "title": "..." }`) |
-| PATCH | `/tasks/:id` | Update a task (`{ "completed": true }` or `{ "title": "..." }`) |
-| DELETE | `/tasks/:id` | Delete a task |
 
 ## Project structure
 
@@ -92,8 +81,7 @@ src/
 │   └── Dockerfile
 ├── web/            # Next.js frontend
 │   ├── app/        # App Router pages and components
-│   │   ├── page.tsx        # To-Do List (home page)
-│   │   └── counter/page.tsx # Counter demo
+│   │   └── page.tsx        # Home page
 │   └── Dockerfile
 └── infrastructure/ # Terraform for GCP deployment
     ├── main.tf
