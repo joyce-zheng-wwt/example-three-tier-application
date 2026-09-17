@@ -8,6 +8,13 @@ A reference implementation of a three-tier web application: a Next.js frontend, 
 Browser → Web (Next.js :3000) → API (Express :3001) → PostgreSQL
 ```
 
+```
+   +-----------+       +---------------+       +---------------+       +--------------+
+   |  Browser  | ----> |  Web (:3000)  | ----> |  API (:3001)  | ----> |  PostgreSQL  |
+   |  (Client) | <---- |    Next.js    | <---- |    Express    | <---- |   Database   |
+   +-----------+       +---------------+       +---------------+       +--------------+
+```
+
 | Layer | Technology | Location |
 |-------|-----------|----------|
 | Frontend | Next.js 16, React 19, Tailwind CSS | `src/web/` |
@@ -103,6 +110,15 @@ The `src/infrastructure/` directory contains Terraform that provisions:
 - Cloud Run services for the API and web frontend
 - Secret Manager secret for the database URL
 - Service accounts and IAM bindings
+
+```
+                 +---------------------------VPC network----------------------------+
+                 |                                                                  |
+   +---------+   +---------+      +-----------+      +-----------+   +--------------+
+   |  Users  |-->|  Cloud  |----->| Cloud Run |----->| Cloud Run |-->|  Cloud SQL   |
+   |         |   | Run:web |      |   (web)   |      |   (api)   |   | (PostgreSQL) |
+   +---------+   +---------+      +-----------+      +-----------+   +--------------+
+```
 
 ### Required variables
 
