@@ -28,7 +28,6 @@ The app includes a task manager (to-do list) that demonstrates how the three tie
 ## Features
 
 - **To-Do List** (`/`) — Full-stack task manager with create, update, and delete operations
-- **Counter** (`/counter`) — Simple client-side counter demo
 
 ## Running locally with Docker Compose
 
@@ -92,14 +91,28 @@ src/
 │   └── Dockerfile
 ├── web/            # Next.js frontend
 │   ├── app/        # App Router pages and components
-│   │   ├── page.tsx        # To-Do List (home page)
-│   │   └── counter/page.tsx # Counter demo
+│   │   └── page.tsx        # To-Do List (home page)
 │   └── Dockerfile
 └── infrastructure/ # Terraform for GCP deployment
     ├── main.tf
     ├── variables.tf
     └── outputs.tf
 ```
+
+## Database migrations
+
+Migrations live in `src/db/migrations/` and use [node-pg-migrate](https://salsita.github.io/node-pg-migrate/).
+
+```bash
+# Apply all pending migrations (run inside the db container or with DATABASE_URL set)
+cd src/db
+DATABASE_URL=postgres://app:app@localhost:5432/app npx node-pg-migrate up
+
+# Roll back the last migration
+DATABASE_URL=postgres://app:app@localhost:5432/app npx node-pg-migrate down
+```
+
+When running via Docker Compose the `migrate` service handles this automatically on startup.
 
 ## Deploying to GCP
 
@@ -130,6 +143,8 @@ The `src/infrastructure/` directory contains Terraform that provisions:
 | `region` | GCP region (default: `us-central1`) |
 | `environment` | `dev`, `staging`, or `prod` (default: `dev`) |
 
+### Deploy
+
 ```bash
 cd src/infrastructure
 terraform init
@@ -139,20 +154,3 @@ terraform apply -var="project_id=my-project" \
 ```
 
 After apply, `terraform output web_url` gives the public URL.
-
-## Database migrations
-
-Migrations live in `src/db/migrations/` and use [node-pg-migrate](https://salsita.github.io/node-pg-migrate/).
-
-```bash
-# Apply all pending migrations (run inside the db container or with DATABASE_URL set)
-cd src/db
-DATABASE_URL=postgres://app:app@localhost:5432/app npx node-pg-migrate up
-
-# Roll back the last migration
-DATABASE_URL=postgres://app:app@localhost:5432/app npx node-pg-migrate down
-```
-
-When running via Docker Compose the `migrate` service handles this automatically on startup.
-
-🚀 🐳 🗄️ ⚡ 🎯 🌟 ✨ 🔧 💻 🎨 🛠️ 📦 🔥 🧪 🌐 🎉 🏗️
