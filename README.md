@@ -28,7 +28,6 @@ The app includes a task manager (to-do list) that demonstrates how the three tie
 ## Features
 
 - **To-Do List** (`/`) — Full-stack task manager with create, update, and delete operations
-- **Counter** (`/counter`) — Simple client-side counter demo
 
 ## Running locally with Docker Compose
 
@@ -92,8 +91,7 @@ src/
 │   └── Dockerfile
 ├── web/            # Next.js frontend
 │   ├── app/        # App Router pages and components
-│   │   ├── page.tsx        # To-Do List (home page)
-│   │   └── counter/page.tsx # Counter demo
+│   │   └── page.tsx        # To-Do List (home page)
 │   └── Dockerfile
 └── infrastructure/ # Terraform for GCP deployment
     ├── main.tf
