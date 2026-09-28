@@ -1,6 +1,20 @@
 import { getTasks, createTask, toggleTask, deleteTask } from './actions';
 import Link from 'next/link';
 
+function isOverdue(task: { completed: boolean; due_date: string | null }): boolean {
+  if (task.completed || !task.due_date) return false;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const dueDate = new Date(task.due_date + 'T00:00:00Z');
+  return dueDate < today;
+}
+
+function formatDate(dateString: string | null): string {
+  if (!dateString) return '';
+  const date = new Date(dateString + 'T00:00:00Z');
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
 export default async function Home() {
   const tasks = await getTasks();
 
@@ -20,20 +34,27 @@ export default async function Home() {
         </div>
 
         {/* Add task form */}
-        <form action={createTask} className="flex gap-2 mb-8">
+        <form action={createTask} className="flex flex-col gap-2 mb-8">
+          <div className="flex gap-2">
+            <input
+              name="title"
+              type="text"
+              required
+              placeholder="Add a new task..."
+              className="flex-1 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 px-4 py-2 text-zinc-900 dark:text-zinc-50 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-500"
+            />
+            <button
+              type="submit"
+              className="rounded-lg bg-zinc-900 dark:bg-zinc-50 px-5 py-2 font-medium text-white dark:text-zinc-900 hover:bg-zinc-700 dark:hover:bg-zinc-200 transition-colors"
+            >
+              Add
+            </button>
+          </div>
           <input
-            name="title"
-            type="text"
-            required
-            placeholder="Add a new task..."
-            className="flex-1 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 px-4 py-2 text-zinc-900 dark:text-zinc-50 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-500"
+            name="due_date"
+            type="date"
+            className="rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 px-4 py-2 text-zinc-900 dark:text-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-500"
           />
-          <button
-            type="submit"
-            className="rounded-lg bg-zinc-900 dark:bg-zinc-50 px-5 py-2 font-medium text-white dark:text-zinc-900 hover:bg-zinc-700 dark:hover:bg-zinc-200 transition-colors"
-          >
-            Add
-          </button>
         </form>
 
         {/* Task list */}
@@ -44,7 +65,11 @@ export default async function Home() {
           {tasks.map((task) => (
             <li
               key={task.id}
-              className="flex items-center gap-3 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-3"
+              className={`flex items-center gap-3 rounded-lg border px-4 py-3 ${
+                isOverdue(task)
+                  ? 'border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-950'
+                  : 'border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800'
+              }`}
             >
               <form
                 action={async () => {
@@ -68,15 +93,29 @@ export default async function Home() {
                   )}
                 </button>
               </form>
-              <span
-                className={`flex-1 text-sm ${
-                  task.completed
-                    ? 'line-through text-zinc-400'
-                    : 'text-zinc-800 dark:text-zinc-100'
-                }`}
-              >
-                {task.title}
-              </span>
+              <div className="flex-1">
+                <span
+                  className={`block text-sm ${
+                    task.completed
+                      ? 'line-through text-zinc-400'
+                      : 'text-zinc-800 dark:text-zinc-100'
+                  }`}
+                >
+                  {task.title}
+                </span>
+                {task.due_date && (
+                  <span
+                    className={`block text-xs mt-1 ${
+                      isOverdue(task)
+                        ? 'text-red-600 dark:text-red-400 font-medium'
+                        : 'text-zinc-500 dark:text-zinc-400'
+                    }`}
+                  >
+                    {isOverdue(task) ? '⚠ Overdue: ' : 'Due: '}
+                    {formatDate(task.due_date)}
+                  </span>
+                )}
+              </div>
               <form
                 action={async () => {
                   'use server';
