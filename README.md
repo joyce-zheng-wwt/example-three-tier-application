@@ -175,6 +175,50 @@ When running via Docker Compose, the `migrate` service handles this automaticall
 3. **Test locally** at [http://localhost:3000](http://localhost:3000)
 4. **Deploy to GCP** using Terraform when ready
 
+## Testing
+
+To test the application locally, use Docker Compose to run all three tiers together:
+
+### Quick Start
+
+```bash
+docker compose up --build
+```
+
+This command will:
+- Build all container images (web, api, and db)
+- Start the PostgreSQL database
+- Run database migrations automatically
+- Start the Express API server
+- Start the Next.js frontend server
+
+### Accessing the Application
+
+Once all services are running, open your browser and navigate to:
+
+```
+http://localhost:3000
+```
+
+You can now:
+- Create, update, and delete tasks on the To-Do List page
+- Test the Counter demo at `/counter`
+- Verify the full-stack integration between frontend, API, and database
+
+### Stopping the Application
+
+To stop all services:
+
+```bash
+docker compose down
+```
+
+To stop and remove all data (including the database volume):
+
+```bash
+docker compose down -v
+```
+
 ## License
 
 See [LICENSE](LICENSE) for details.
