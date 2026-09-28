@@ -4,24 +4,40 @@ A reference implementation of a three-tier web application: a Next.js frontend, 
 
 ## Architecture
 
-```
-Browser → Web (Next.js :3000) → API (Express :3001) → PostgreSQL
-```
+### Local Development (Docker Compose)
 
 ```
-   +-----------+       +---------------+       +---------------+       +--------------+
-   |  Browser  | ----> |  Web (:3000)  | ----> |  API (:3001)  | ----> |  PostgreSQL  |
-   |  (Client) | <---- |    Next.js    | <---- |    Express    | <---- |   Database   |
-   +-----------+       +---------------+       +---------------+       +--------------+
+┌─────────────┐       ┌──────────────┐       ┌──────────────┐       ┌──────────────┐
+│   Browser   │       │  Web Layer   │       │  API Layer   │       │ Data Layer   │
+│  (Client)   │◄─────►│  Next.js     │◄─────►│  Express     │◄─────►│  PostgreSQL  │
+│             │       │  :3000       │       │  :3001       │       │  Database    │
+└─────────────┘       └──────────────┘       └──────────────┘       └──────────────┘
+     HTTP                  HTTP                    HTTP                   TCP
 ```
+
+### Cloud Deployment (GCP)
+
+```
+┌──────────────────────────────────── GCP VPC Network ────────────────────────────────────┐
+│                                                                                           │
+│  ┌──────────────┐      ┌──────────────┐      ┌──────────────┐      ┌──────────────┐    │
+│  │    Users     │      │  Cloud Run   │      │  Cloud Run   │      │  Cloud SQL   │    │
+│  │   (Public)   │─────►│  Web Service │─────►│  API Service │─────►│  PostgreSQL  │    │
+│  │              │      │              │      │              │      │  (Private)   │    │
+│  └──────────────┘      └──────────────┘      └──────────────┘      └──────────────┘    │
+│                                                                                           │
+└───────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Technology Stack
 
 | Layer | Technology | Location |
 |-------|-----------|----------|
-| Frontend | Next.js 16, React 19, Tailwind CSS | `src/web/` |
-| API | Express 5, Node.js 22 | `src/api/` |
-| Database | PostgreSQL 17 | managed by Docker / Cloud SQL |
-| Migrations | node-pg-migrate | `src/db/` |
-| Infrastructure | Terraform (GCP) | `src/infrastructure/` |
+| **Frontend** | Next.js 16, React 19, Tailwind CSS | `src/web/` |
+| **API** | Express 5, Node.js 22 | `src/api/` |
+| **Database** | PostgreSQL 17 | managed by Docker / Cloud SQL |
+| **Migrations** | node-pg-migrate | `src/db/` |
+| **Infrastructure** | Terraform (GCP) | `src/infrastructure/` |
 
 The app includes a task manager (to-do list) that demonstrates how the three tiers communicate.
 
@@ -30,13 +46,13 @@ The app includes a task manager (to-do list) that demonstrates how the three tie
 - **To-Do List** (`/`) — Full-stack task manager with create, update, and delete operations
 - **Counter** (`/counter`) — Simple client-side counter demo
 
-## Running locally with Docker Compose
+## Running Locally with Docker Compose
 
 ### Prerequisites
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) (or Docker Engine + Compose plugin)
 
-### Start the stack
+### Start the Stack
 
 ```bash
 docker compose up --build
@@ -51,7 +67,7 @@ This starts four services in order:
 
 Once running, open [http://localhost:3000](http://localhost:3000).
 
-### Stop and clean up
+### Stop and Clean Up
 
 ```bash
 # Stop containers (keeps the postgres_data volume)
@@ -61,13 +77,13 @@ docker compose down
 docker compose down -v
 ```
 
-### Rebuild after code changes
+### Rebuild After Code Changes
 
 ```bash
 docker compose up --build
 ```
 
-### API endpoints
+### API Endpoints
 
 The API is not exposed directly, but you can reach it through the web container or by temporarily mapping its port:
 
@@ -79,7 +95,7 @@ The API is not exposed directly, but you can reach it through the web container 
 | PATCH | `/tasks/:id` | Update a task (`{ "completed": true }` or `{ "title": "..." }`) |
 | DELETE | `/tasks/:id` | Delete a task |
 
-## Project structure
+## Project Structure
 
 ```
 src/
@@ -111,16 +127,7 @@ The `src/infrastructure/` directory contains Terraform that provisions:
 - Secret Manager secret for the database URL
 - Service accounts and IAM bindings
 
-```
-                 +---------------------------VPC network----------------------------+
-                 |                                                                  |
-   +---------+   +---------+      +-----------+      +-----------+   +--------------+
-   |  Users  |-->|  Cloud  |----->| Cloud Run |----->| Cloud Run |-->|  Cloud SQL   |
-   |         |   | Run:web |      |   (web)   |      |   (api)   |   | (PostgreSQL) |
-   +---------+   +---------+      +-----------+      +-----------+   +--------------+
-```
-
-### Required variables
+### Required Variables
 
 | Variable | Description |
 |----------|-------------|
@@ -129,6 +136,8 @@ The `src/infrastructure/` directory contains Terraform that provisions:
 | `web_image` | Container image URI for the web frontend |
 | `region` | GCP region (default: `us-central1`) |
 | `environment` | `dev`, `staging`, or `prod` (default: `dev`) |
+
+### Deploy
 
 ```bash
 cd src/infrastructure
@@ -140,9 +149,11 @@ terraform apply -var="project_id=my-project" \
 
 After apply, `terraform output web_url` gives the public URL.
 
-## Database migrations
+## Database Migrations
 
 Migrations live in `src/db/migrations/` and use [node-pg-migrate](https://salsita.github.io/node-pg-migrate/).
+
+### Manual Migration
 
 ```bash
 # Apply all pending migrations (run inside the db container or with DATABASE_URL set)
@@ -153,6 +164,15 @@ DATABASE_URL=postgres://app:app@localhost:5432/app npx node-pg-migrate up
 DATABASE_URL=postgres://app:app@localhost:5432/app npx node-pg-migrate down
 ```
 
-When running via Docker Compose the `migrate` service handles this automatically on startup.
+When running via Docker Compose, the `migrate` service handles this automatically on startup.
 
-🚀 🐳 🗄️ ⚡ 🎯 🌟 ✨ 🔧 💻 🎨 🛠️ 📦 🔥 🧪 🌐 🎉 🏗️ 📊 🎭 🌈 💡 🎸 🍕 🌍 🎮 ⭐ 🔑 🎪 🌺 🚁 🎯 📱 🎬 🏆 🌙 🎵 🔮
+## Development Workflow
+
+1. **Make code changes** in `src/web/`, `src/api/`, or `src/db/`
+2. **Rebuild and restart** with `docker compose up --build`
+3. **Test locally** at [http://localhost:3000](http://localhost:3000)
+4. **Deploy to GCP** using Terraform when ready
+
+## License
+
+See [LICENSE](LICENSE) for details.
